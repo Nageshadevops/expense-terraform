@@ -1,3 +1,3 @@
-bucket = "tf-backend"
+bucket = "tf-join-backend"
 key    = "expense-terraform/dev/state"
 region = "us-east-1"
