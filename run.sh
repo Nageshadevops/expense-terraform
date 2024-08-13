@@ -1,12 +1,14 @@
 env=$1
 action=$2
-if [ -z = "$env" ]; then
-  echo "Input env(dev|qa|stage|prod) missing"
+
+if [ -z "$env" ]; then
+  echo "Input env(dev|qa|state|prod) missing"
   exit 1
 fi
-if [ -z = "$action" ]; then
+
+if [ -z "$action" ]; then
   echo "Input action (apply|destroy) missing"
-  exit 2
+  exit 1
 fi
 
 rm -rf .terraform/terraform.tfstate
