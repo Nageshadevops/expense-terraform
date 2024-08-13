@@ -19,13 +19,13 @@ resource "null_resource" "ansible" {
     }
 
     inline = [
-      "sudo pip3.11 install ansible"
-      "ansible-pull -i localhost, -U https://github.com/Nageshadevops/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component}"
+      "sudo pip3.11 install ansible",
+      "ansible-pull -i localhost, -U https://github.com/Nageshadevops/expense-terraform.git expense.yml -e env=${var.env} -e role_name=${var.component}"
     ]
   }
 }
 
-resource "aws_route53_record" "main" {
+resource "aws_route53_record" "record" {
   name    = "${var.component}-${var.env}"
   type    = "A"
   zone_id = var.zone_id
