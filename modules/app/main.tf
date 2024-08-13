@@ -18,10 +18,10 @@ resource "null_resource" "ansible" {
       host     = aws_instance.instance.public_ip
     }
 
-      inline = [
-        "sudo pip3.11 install ansible"
-        "ansible-pull -i localhost, -U https://github.com/Nageshadevops/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component}"
-      ]
+    inline = [
+      "sudo pip3.11 install ansible"
+      "ansible-pull -i localhost, -U https://github.com/Nageshadevops/expense-ansible expense.yml -e env=${var.env} -e role_name=${var.component}"
+    ]
   }
 }
 
