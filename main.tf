@@ -17,6 +17,8 @@ module "frontend" {
   prometheus_nodes        = var.prometheus_nodes
   server_app_port_sg_cidr = var.public_subnets
   lb_app_port_sg_cidr     = ["0.0.0.0/0"]
+  certificate_arn         = var.certificate_arn
+  lb_ports                = {http: 80, https: 443}
 }
 
 module "backend" {
@@ -38,6 +40,7 @@ module "backend" {
   prometheus_nodes        = var.prometheus_nodes
   server_app_port_sg_cidr = concat(var.frontend_subnets, var.backend_subnets)
   lb_app_port_sg_cidr     = var.frontend_subnets
+  lb_ports                = {http: 8080}
 }
 
 module "mysql" {
@@ -54,6 +57,20 @@ module "mysql" {
   app_port                = 3306
   server_app_port_sg_cidr = var.backend_subnets
 }
+
+# module "rds" {
+#   source                  = "./modules/rds"
+#   env                     = var.env
+#   identifier              = "demodb"
+#   engine                  = "mysql"
+#   engine_version          = "5.7"
+#   instance_class          = "db.t3a.large"
+#   allocated_storage       = 5
+#   db_name                 = "demodb"
+#   username                = "user"
+#   port                    = "3306"
+#   multi_az                = false
+# }
 
 module "vpc" {
   source                 = "./modules/vpc"
