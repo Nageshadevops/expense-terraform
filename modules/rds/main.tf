@@ -1,39 +1,54 @@
-# resource "rds" "main" {
-#   allocated_storage    = 10
-#   db_name              = "mydb"
-#   engine               = "mysql"
-#   engine_version       = "8.0"
-#   instance_class       = "db.t3.micro"
-#   username             = "foo"
-#   password             = "foobarbaz"
-#   parameter_group_name = "default.mysql8.0"
-#   skip_final_snapshot  = true
-#
-#   tags = {
-#     Owner       = "user"
-#     Environment = "dev"
-#   }
-#
-#   create_db_subnet_group = true
-#   subnet_ids             = ["subnet-12345678", "subnet-87654321"]
-#   family = "mysql5.7"
-#   major_engine_version = "5.7"
-#   deletion_protection = true
-#   parameters = [
-#     {
-#       name  = "character_set_client"
-#       value = "utf8mb4"
-#     },
-#     {
-#       name  = "character_set_server"
-#       value = "utf8mb4"
-#     }
-#   ]
-# }
-#
-# # secrets/rds/create
-# # path to this secrete
-# # dev
-# # secrete data
-# # username: myadmin
-# # password: ExpenseApp123
+resource "aws_db_instance" "main" {
+  identifier           = "${var.component}-${var.env}"
+  db_name              = "mydb"
+  engine               = var.engine
+  engine_version       = var.engine_version
+  instance_class       = var.instance_class
+  username             = jsondecode(data.vault_generic_secret.rds.data_json).username
+  password             = jsondecode(data.vault_generic_secret.rds.data_json).password
+  parameter_group_name = aws_db_parameter_group.main.name
+  skip_final_snapshot  = var.skip_final_snapshot
+  multi_az             = false
+  allocated_storage    = var.allocated_storage
+  storage_type         = var.storage_type
+  publicly_accessible  = false
+  db_subnet_group_name = aws_db_subnet_group.default.name
+}
+
+resource "aws_db_parameter_group" "main" {
+  name   = "${var.component}-${var.env}-pg"
+  family = var.family
+}
+
+resource "aws_db_subnet_group" "default" {
+  name       = "${var.component}-${var.env}-subnet-group"
+  subnet_ids = var.subnet_ids
+
+  tags = {
+    Name = "${var.component}-${var.env}-subnet-group"
+  }
+}
+
+resource "aws_security_group" "main" {
+  name        = "${var.component}-${var.env}-sg"
+  description = "${var.component}-${var.env}-sg"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "TCP"
+    cidr_blocks = var.server_app_port_sg_cidr
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.component}-${var.env}-sg"
+  }
+}
