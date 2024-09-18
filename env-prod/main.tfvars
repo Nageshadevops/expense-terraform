@@ -22,4 +22,4 @@ kms_key_id         = "arn:aws:kms:us-east-1:838007018287:key/5c43fd83-e83b-4db4-
 
 #ASG
 max_capacity       = 5
-min_capacity       = 2
+min_capacity       = 1
