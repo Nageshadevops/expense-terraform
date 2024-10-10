@@ -16,7 +16,7 @@ resource "aws_eks_cluster" "cluster" {
 }
 
 resource "aws_launch_template" "main" {
-  name                   = "eks-${var.env}"
+  name = "eks-${var.env}"
 
   block_device_mappings {
     device_name = "/dev/xvda"
